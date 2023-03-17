@@ -18,7 +18,7 @@ provider "aws" {
 }
 
 resource "aws_vpc" "my_vpc" { 
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr
   tags = {
     Name = "hello_world" 
   }
@@ -33,7 +33,7 @@ resource "aws_internet_gateway" "my_gateway" {
 
 resource "aws_subnet" "public_subnet_1" {
   vpc_id = aws_vpc.my_vpc.id
-  cidr_block = "10.0.1.0/24"
+  cidr_block = var.subnet_cidr_block[0]
   availability_zone = "ap-northeast-1a"
   #Enable auto-assign public IPv4 address
   map_public_ip_on_launch = true
@@ -44,7 +44,7 @@ resource "aws_subnet" "public_subnet_1" {
 
 resource "aws_subnet" "public_subnet_2" {
   vpc_id = aws_vpc.my_vpc.id
-  cidr_block = "10.0.2.0/24"
+  cidr_block = var.subnet_cidr_block[1]
   availability_zone = "ap-northeast-1c"
   #Enable auto-assign public IPv4 address
   map_public_ip_on_launch = true
@@ -116,7 +116,7 @@ resource "aws_ecs_task_definition" "hello_world_task_definition" {
   memory    = 512
   container_definitions    = jsonencode([{
     name  = "hello-world"
-    image = "ajmaldocker07/hello-world"
+    image = var.image_name
 
     portMappings = [{
       containerPort = 3000
