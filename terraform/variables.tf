@@ -1,7 +1,7 @@
 variable "image_name" {
     description = "docker image"
     type = string
-    default = "ajmaldocker07/hello-world:300000"
+    default = "ajmaldocker07/hello-world:13"
 }
 
 variable "vpc_cidr" {
