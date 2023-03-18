@@ -22,6 +22,14 @@ pipeline {
             }  
          }
 
+        stage ('sed for edit tf file') {
+            dir ("./terraform") {
+              sh """
+                 sed -i  "s/hello-world:[0-9]\+/hello-world:${build_number}/" variables.tf
+                 """   
+            }
+        }
+
          stage ('terraform steps') {
             dir ("./terraform") {
                 sh "terraform init"
