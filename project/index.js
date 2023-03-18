@@ -5,7 +5,7 @@ var express = require('express');
 var app = module.exports = express()
 
 app.get('/', function(req, res){
-  res.send('ECS Project using terraform and jenkins');
+  res.send('Hello world project');
 });
 
 /* istanbul ignore next */
