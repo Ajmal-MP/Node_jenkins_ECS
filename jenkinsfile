@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+    stages{
+         stage('Code from GitHub') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Ajmal-MP/Node_jenkins_ECS.git'
+            }
+         }
+
+         stage('Docker image build and push') {
+            steps {
+
+                dir("./project") {
+                sh "docker build -t ajmaldocker07/hello-world:${build_number} ."
+                }
+
+                withCredentials([usernamePassword(credentialsId: 'docker_id', passwordVariable: 'docker_password', usernameVariable: 'docker_user_name')]) {
+                    sh "docker login -u $docker_user_name  -p $docker_password"
+                    sh "docker push ajmaldocker07/hello-world:${build_number}"
+                    sh "docker rmi ajmaldocker07/hello-world:${build_number}"
+                } 
+            }  
+         }
+
+        stage ('sed for edit tf file') {
+            steps {
+                dir ("./terraform") {
+                  sh """
+                     sed -i  's/hello-world:[0-9]\\+/hello-world:${build_number}/' variables.tf
+                     """   
+            }
+            }
+        }
+
+         stage ('terraform steps') {
+            steps {
+                    dir ("./terraform") {
+                        sh "terraform init"
+                        sh "terraform apply -auto-approve"
+                    }
+            }
+         }
+
+    }
+    post {
+	       always {
+		       sh 'docker logout'
+	       }
+    }    
+}
